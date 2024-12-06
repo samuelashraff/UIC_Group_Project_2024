@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, data } from 'react-router-dom';
 import MainPage from './components/MainPage';
 import LogDataPage from './components/LogDataPage';
 import UpdateDataPage from './components/UpdateDataPage';
@@ -7,6 +7,7 @@ import GenerateReportPage from './components/GenerateReportPage';
 
 function App() {
   const [dataPoints, setDataPoints] = useState([]);
+  console.log(dataPoints)
 
   return (
     <Router>
