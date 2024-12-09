@@ -131,27 +131,38 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
         </div>
       )}
 
-      {/* List of data points displayed as cards */}
+      {/* List of data points displayed as a table */}
       {!selectedData && dataPoints.length > 0 && (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {dataPoints.map((data) => (
-            <div
-              key={data.id}
-              className="bg-white shadow-md rounded-lg p-4 border border-gray-300 mb-4"
-            >
-              <div className="mb-4">
-                <h3 className="text-xl font-bold text-gray-800">{`Trees: ${data.numTrees}`}</h3>
-                <p className="text-gray-600">{`Location: ${data.location.longitude}, ${data.location.latitude}`}</p>
-                <p className="text-gray-600">{`Growth Stage: ${data.growthStage}`}</p>
-              </div>
-              <button
-                onClick={() => handleSelectData(data)}
-                className="w-full bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg transition-colors duration-200"
-              >
-                Edit
-              </button>
-            </div>
-          ))}
+        <div className="overflow-x-auto mb-6">
+          <table className="min-w-full table-auto border-collapse">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 border-b text-center">Number of Trees</th>
+                <th className="px-4 py-2 border-b text-center">Longitude</th>
+                <th className="px-4 py-2 border-b text-center">Latitude</th>
+                <th className="px-4 py-2 border-b text-center">Growth Stage</th>
+                <th className="px-4 py-2 border-b text-center">Actions</th>
+              </tr>
+            </thead>
+            <tbody>
+              {dataPoints.map((data) => (
+                <tr key={data.id} className="hover:bg-gray-100">
+                  <td className="px-4 py-2 border-b text-center">{data.numTrees}</td>
+                  <td className="px-4 py-2 border-b text-center">{data.location.longitude}</td>
+                  <td className="px-4 py-2 border-b text-center">{data.location.latitude}</td>
+                  <td className="px-4 py-2 border-b text-center">{data.growthStage}</td>
+                  <td className="px-4 py-2 border-b text-center">
+                    <button
+                      onClick={() => handleSelectData(data)}
+                      className="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+                    >
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
 

@@ -12,7 +12,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<MainPage />} />
+        <Route path="/" element={<MainPage dataPoints={dataPoints}/>} />
         <Route
           path="/log-data"
           element={<LogDataPage dataPoints={dataPoints} setDataPoints={setDataPoints} />}
