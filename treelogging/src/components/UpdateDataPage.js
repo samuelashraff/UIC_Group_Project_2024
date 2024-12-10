@@ -9,33 +9,41 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
   const [growthStage, setGrowthStage] = useState("");
   const [message, setMessage] = useState(null);
   const [errors, setErrors] = useState({
-    numTrees: true,
-    longitude: true,
-    latitude: true,
-    growthStage: true,
+    numTrees: null,
+    longitude: null,
+    latitude: null,
+    growthStage: null,
   });
+
   const [hasChanges, setHasChanges] = useState(false);
 
   const validateField = (field, value) => {
+    if (value === "") return null; // No error if the field hasn't been interacted with
     switch (field) {
       case "numTrees":
-        return value && !isNaN(value) && parseInt(value) > 0;
+        return value && !isNaN(value) && parseInt(value) > 0
+          ? null
+          : "Please enter a valid number greater than 0.";
       case "longitude":
-        return value && !isNaN(value) && value >= -180 && value <= 180;
+        return value && !isNaN(value) && value >= -180 && value <= 180
+          ? null
+          : "Longitude must be between -180 and 180.";
       case "latitude":
-        return value && !isNaN(value) && value >= -90 && value <= 90;
+        return value && !isNaN(value) && value >= -90 && value <= 90
+          ? null
+          : "Latitude must be between -90 and 90.";
       case "growthStage":
-        return !!value;
+        return value ? null : "Please select a growth stage.";
       default:
-        return true;
+        return null;
     }
   };
 
-  const handleInputChange = (field, value) => {
-    let isValid = validateField(field, value);
-    setErrors((prevErrors) => ({ ...prevErrors, [field]: !isValid }));
 
-    // Handle changes in fields
+  const handleInputChange = (field, value) => {
+    const errorMessage = validateField(field, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [field]: errorMessage }));
+  
     if (field === "numTrees") {
       setNumTrees(value);
       setHasChanges(value !== String(selectedData.numTrees));
@@ -53,6 +61,7 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
       setHasChanges(value !== selectedData.growthStage);
     }
   };
+  
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -83,21 +92,22 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
     setHasChanges(false); // Reset changes state when selecting a new data point
   };
 
-  const isFormValid = Object.values(errors).every((error) => !error);
+  const isFormValid = Object.values(errors).every((error) => error === null);
   const isSubmitDisabled = !hasChanges || !isFormValid;
+  
 
   useEffect(() => {
     if (selectedData) {
-      // Reset validation and changes status when a new data point is selected
       setHasChanges(false);
       setErrors({
-        numTrees: false,
-        longitude: false,
-        latitude: false,
-        growthStage: false,
+        numTrees: null,
+        longitude: null,
+        latitude: null,
+        growthStage: null,
       });
     }
   }, [selectedData]);
+  
 
   return (
     <div className="container mx-auto mt-10">
@@ -186,6 +196,7 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
               }`}
               placeholder="Enter the number of trees planted"
             />
+            {errors.numTrees && <p className="text-red-500 text-sm mt-1">{errors.numTrees}</p>}
           </div>
           <div className="mb-4">
             <label htmlFor="longitude" className="block text-gray-700 font-medium mb-2">

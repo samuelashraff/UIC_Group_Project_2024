@@ -13,6 +13,16 @@ const GenerateReport = ({ dataPoints }) => {
   });
   const [filteredData, setFilteredData] = useState(dataPoints);
 
+  const [errors, setErrors] = useState({
+    minTrees: "",
+    maxTrees: "",
+    minLongitude: "",
+    maxLongitude: "",
+    minLatitude: "",
+    maxLatitude: "",
+  });
+  
+
   const applyFilters = () => {
     const {
       minTrees,
@@ -43,20 +53,43 @@ const GenerateReport = ({ dataPoints }) => {
     setFilteredData(filtered);
   };
 
-  const resetFilters = () => {
-    setFilteredData(dataPoints); // Reset to show all data
-    setFilters({
-      minTrees: "",
-      maxTrees: "",
-      growthStage: "",
-      minLongitude: "",
-      maxLongitude: "",
-      minLatitude: "",
-      maxLatitude: "",
-    });
-  };
-
   const handleFilterChange = (field, value) => {
+    let errorMessage = "";
+
+    switch (field) {
+      case "minTrees":
+      case "maxTrees":
+        if (value !== "" && (isNaN(value) || parseInt(value) < 0)) {
+          errorMessage = "Value must be a non-negative integer.";
+        } else if (field === "maxTrees" && filters.minTrees && parseInt(value) < parseInt(filters.minTrees)) {
+          errorMessage = "Max Trees must be greater than or equal to Min Trees.";
+        }
+        break;
+
+      case "minLongitude":
+      case "maxLongitude":
+        if (value !== "" && (isNaN(value) || value < -180 || value > 180)) {
+          errorMessage = "Value must be between -180 and 180.";
+        } else if (field === "maxLongitude" && filters.minLongitude && parseFloat(value) < parseFloat(filters.minLongitude)) {
+          errorMessage = "Max Longitude must be greater than or equal to Min Longitude.";
+        }
+        break;
+
+      case "minLatitude":
+      case "maxLatitude":
+        if (value !== "" && (isNaN(value) || value < -90 || value > 90)) {
+          errorMessage = "Value must be between -90 and 90.";
+        } else if (field === "maxLatitude" && filters.minLatitude && parseFloat(value) < parseFloat(filters.minLatitude)) {
+          errorMessage = "Max Latitude must be greater than or equal to Min Latitude.";
+        }
+        break;
+
+      default:
+        break;
+    }
+
+    setErrors((prev) => ({ ...prev, [field]: errorMessage }));
+
     setFilters((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -86,9 +119,10 @@ const GenerateReport = ({ dataPoints }) => {
               min="0"
               value={filters.minTrees}
               onChange={(e) => handleFilterChange("minTrees", e.target.value)}
-              className="w-full border rounded p-2"
+              className={`w-full border rounded p-2 ${errors.minTrees ? "border-red-500" : ""}`}
               placeholder="Minimum number of trees"
             />
+            {errors.minTrees && <p className="text-red-500 text-sm mt-1">{errors.minTrees}</p>}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Max Trees</label>
@@ -97,9 +131,10 @@ const GenerateReport = ({ dataPoints }) => {
               min="1"
               value={filters.maxTrees}
               onChange={(e) => handleFilterChange("maxTrees", e.target.value)}
-              className="w-full border rounded p-2"
+              className={`w-full border rounded p-2 ${errors.maxTrees ? "border-red-500" : ""}`}
               placeholder="Maximum number of trees"
             />
+            {errors.maxTrees && <p className="text-red-500 text-sm mt-1">{errors.maxTrees}</p>}
           </div>
 
           {/* Growth Stage Filter */}
@@ -126,9 +161,10 @@ const GenerateReport = ({ dataPoints }) => {
               max="180"
               value={filters.minLongitude}
               onChange={(e) => handleFilterChange("minLongitude", e.target.value)}
-              className="w-full border rounded p-2"
+              className={`w-full border rounded p-2 ${errors.minLongitude ? "border-red-500" : ""}`}
               placeholder="-180 to 180"
             />
+            {errors.minLongitude && <p className="text-red-500 text-sm mt-1">{errors.minLongitude}</p>}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Max Longitude</label>
@@ -138,9 +174,10 @@ const GenerateReport = ({ dataPoints }) => {
               max="180"
               value={filters.maxLongitude}
               onChange={(e) => handleFilterChange("maxLongitude", e.target.value)}
-              className="w-full border rounded p-2"
+              className={`w-full border rounded p-2 ${errors.maxLongitude ? "border-red-500" : ""}`}
               placeholder="-180 to 180"
             />
+            {errors.maxLongitude && <p className="text-red-500 text-sm mt-1">{errors.maxLongitude}</p>}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Min Latitude</label>
@@ -150,9 +187,10 @@ const GenerateReport = ({ dataPoints }) => {
               max="90"
               value={filters.minLatitude}
               onChange={(e) => handleFilterChange("minLatitude", e.target.value)}
-              className="w-full border rounded p-2"
+              className={`w-full border rounded p-2 ${errors.minLatitude ? "border-red-500" : ""}`}
               placeholder="-90 to 90"
             />
+            {errors.minLatitude && <p className="text-red-500 text-sm mt-1">{errors.minLatitude}</p>}
           </div>
           <div>
             <label className="block text-gray-700 font-medium mb-2">Max Latitude</label>
@@ -162,14 +200,18 @@ const GenerateReport = ({ dataPoints }) => {
               max="90"
               value={filters.maxLatitude}
               onChange={(e) => handleFilterChange("maxLatitude", e.target.value)}
-              className="w-full border rounded p-2"
+              className={`w-full border rounded p-2 ${errors.maxLatitude ? "border-red-500" : ""}`}
               placeholder="-90 to 90"
             />
+            {errors.maxLatitude && <p className="text-red-500 text-sm mt-1">{errors.maxLatitude}</p>}
           </div>
         </div>
         <button
           onClick={applyFilters}
-          className="mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg"
+          disabled={Object.values(errors).some((err) => err)}
+          className={`mt-4 bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 rounded-lg ${
+            Object.values(errors).some((err) => err) ? "opacity-50 cursor-not-allowed" : ""
+          }`}
         >
           Apply Filters
         </button>

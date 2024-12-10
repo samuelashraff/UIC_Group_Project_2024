@@ -9,36 +9,37 @@ const LogDataPage = ({ dataPoints, setDataPoints }) => {
 
   // Real-time validation states
   const [errors, setErrors] = useState({
-    numTrees: true,
-    longitude: true,
-    latitude: true,
-    growthStage: true,
+    numTrees: null,
+    longitude: null,
+    latitude: null,
+    growthStage: null,
   });
 
   const navigate = useNavigate();
 
   // Update validation for each field
   const validateField = (field, value) => {
+    if (value === "") return null; // No error if the field hasn't been interacted with
     switch (field) {
       case "numTrees":
-        return value && !isNaN(value) && parseInt(value) > 0;
+        return value && !isNaN(value) && parseInt(value) > 0 ? null : "Please enter a valid number greater than 0.";
       case "longitude":
-        return value && !isNaN(value) && value >= -180 && value <= 180;
+        return value && !isNaN(value) && value >= -180 && value <= 180 ? null : "Longitude must be between -180 and 180.";
       case "latitude":
-        return value && !isNaN(value) && value >= -90 && value <= 90;
+        return value && !isNaN(value) && value >= -90 && value <= 90 ? null : "Latitude must be between -90 and 90.";
       case "growthStage":
-        return !!value;
+        return value ? null : "Please select a growth stage.";
       default:
-        return true;
+        return null;
     }
   };
+  
 
   // Unified input change handler with validation
   const handleInputChange = (field, value) => {
-    let isValid = validateField(field, value);
-
-    setErrors((prevErrors) => ({ ...prevErrors, [field]: !isValid }));
-
+    const errorMessage = validateField(field, value);
+    setErrors((prevErrors) => ({ ...prevErrors, [field]: errorMessage }));
+  
     if (field === "numTrees") setNumTrees(value);
     if (field === "longitude") setLocation((prev) => ({ ...prev, longitude: value }));
     if (field === "latitude") setLocation((prev) => ({ ...prev, latitude: value }));
@@ -105,8 +106,9 @@ const LogDataPage = ({ dataPoints, setDataPoints }) => {
             className={`w-full border rounded p-2 ${
               errors.numTrees ? "border-red-500" : "border-green-500"
             }`}
-            placeholder="Enter the number of trees planted"
+            placeholder="Enter a positive number above 0"
           />
+          {errors.numTrees && <p className="text-red-500 text-sm mt-1">{errors.numTrees}</p>}
         </div>
         <div className="mb-4">
           <label htmlFor="longitude" className="block text-gray-700 font-medium mb-2">
@@ -120,8 +122,9 @@ const LogDataPage = ({ dataPoints, setDataPoints }) => {
             className={`w-full border rounded p-2 ${
               errors.longitude ? "border-red-500" : "border-green-500"
             }`}
-            placeholder="Enter longitude"
+            placeholder="Enter a number between -180 and 180"
           />
+          {errors.longitude && <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>}
         </div>
         <div className="mb-4">
           <label htmlFor="latitude" className="block text-gray-700 font-medium mb-2">
@@ -135,8 +138,9 @@ const LogDataPage = ({ dataPoints, setDataPoints }) => {
             className={`w-full border rounded p-2 ${
               errors.latitude ? "border-red-500" : "border-green-500"
             }`}
-            placeholder="Enter latitude"
+            placeholder="Enter a number between -90 and 90"
           />
+          {errors.latitude && <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>}
         </div>
         <div className="mb-4">
           <label htmlFor="growthStage" className="block text-gray-700 font-medium mb-2">
