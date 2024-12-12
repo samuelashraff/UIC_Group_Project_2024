@@ -230,26 +230,29 @@ const GenerateReport = ({ dataPoints }) => {
           <p className="text-sm">Try adjusting the filters to see results.</p>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {filteredData.map((data) => (
-            <div
-              key={data.id}
-              className="bg-white shadow-md rounded-lg p-4 border border-gray-300"
-            >
-              <h3 className="text-xl font-bold text-gray-800 mb-2">{`Tree Report for ID: ${data.id}`}</h3>
-              <ul className="text-gray-600">
-                <li>
-                  <strong>Number of Trees:</strong> {data.numTrees}
-                </li>
-                <li>
-                  <strong>Location:</strong> {`${data.location.longitude}, ${data.location.latitude}`}
-                </li>
-                <li>
-                  <strong>Growth Stage:</strong> {data.growthStage}
-                </li>
-              </ul>
-            </div>
-          ))}
+        <div className="overflow-x-auto mb-6">
+          <table className="min-w-full bg-white border-collapse">
+            <thead>
+              <tr>
+                <th className="px-4 py-2 border-b text-center">ID</th>
+                <th className="px-4 py-2 border-b text-center">Number of Trees</th>
+                <th className="px-4 py-2 border-b text-center">Location</th>
+                <th className="px-4 py-2 border-b text-center">Growth Stage</th>
+              </tr>
+            </thead>
+            <tbody>
+              {filteredData.map((data) => (
+                <tr key={data.id}>
+                  <td className="px-4 py-2 border-b text-center">{data.id}</td>
+                  <td className="px-4 py-2 border-b text-center">{data.numTrees}</td>
+                  <td className="px-4 py-2 border-b text-center">
+                    {data.location.latitude}, {data.location.longitude}
+                  </td>
+                  <td className="px-4 py-2 border-b text-center">{data.growthStage}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
       )}
     </div>

@@ -92,7 +92,12 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
     setHasChanges(false); // Reset changes state when selecting a new data point
   };
 
-  const isFormValid = Object.values(errors).every((error) => error === null);
+  const isFormValid =
+    Object.values(errors).every((error) => error === null) &&
+    String(numTrees).trim() !== "" &&
+    String(locationData.longitude).trim() !== "" &&
+    String(locationData.latitude).trim() !== "" &&
+    growthStage.trim() !== "";
   const isSubmitDisabled = !hasChanges || !isFormValid;
   
 
@@ -212,6 +217,7 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
               }`}
               placeholder="Enter longitude"
             />
+            {errors.longitude && <p className="text-red-500 text-sm mt-1">{errors.longitude}</p>}
           </div>
           <div className="mb-4">
             <label htmlFor="latitude" className="block text-gray-700 font-medium mb-2">
@@ -227,6 +233,7 @@ const UpdateDataPage = ({ dataPoints, setDataPoints }) => {
               }`}
               placeholder="Enter latitude"
             />
+            {errors.latitude && <p className="text-red-500 text-sm mt-1">{errors.latitude}</p>}
           </div>
           <div className="mb-4">
             <label htmlFor="growthStage" className="block text-gray-700 font-medium mb-2">

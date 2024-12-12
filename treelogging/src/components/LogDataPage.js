@@ -69,7 +69,11 @@ const LogDataPage = ({ dataPoints, setDataPoints }) => {
     }, 1000);
   };
 
-  const isFormValid = Object.values(errors).every((error) => !error);
+  const isFormValid = Object.values(errors).every((error) => !error) &&
+    numTrees.trim() !== "" &&
+    location.longitude.trim() !== "" &&
+    location.latitude.trim() !== "" &&
+    growthStage.trim() !== "";
 
   return (
     <div className="container mx-auto mt-10">
